@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#087443">
+  <title>Mali Market - Acheter au Mali</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7f5;
+      color: #202820;
+    }
+
+    header {
+      background: #087443;
+      color: white;
+      padding: 18px 16px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    header h1 { margin: 0; font-size: 24px; }
+
+    .cart-count {
+      background: white;
+      color: #087443;
+      border-radius: 20px;
+      padding: 8px 12px;
+      font-weight: bold;
+    }
+
+    .hero {
+      padding: 24px 16px;
+      background: #e2f3e8;
+    }
+
+    .hero h2 { margin-top: 0; }
+
+    main { padding: 16px; }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0 14px;
+      border: 1px solid #ccc;
+      border-radius: 9px;
+      background: white;
+      font-size: 16px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .product {
+      background: white;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 2px 7px #0000000d;
+      overflow-wrap: anywhere;
+    }
+
+    .picture {
+      background: #edf3ed;
+      border-radius: 9px;
+      text-align: center;
+      font-size: 48px;
+      padding: 20px 0;
+    }
+
+    .product h3 { font-size: 16px; }
+
+    .price {
+      font-weight: bold;
+      color: #087443;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      background: #087443;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .product button { width: 100%; }
+
+    .secondary {
+      background: #e4eee7;
+      color: #075a35;
+    }
+
+    .panel {
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 12px;
+      background: white;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+
+    .cart-item button { padding: 7px 10px; }
+
+    .full { width: 100%; }
+
+    footer {
+      text-align: center;
+      padding: 24px 12px;
+      color: #555;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 650px) {
+      .products { grid-template-columns: repeat(4, 1fr); }
+      main, .hero { padding-left: max(20px, 8%); padding-right: max(20px, 8%); }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="top">
+      <h1>🇲🇱 Mali Market</h1>
+      <div class="cart-count">🛒 <span id="count">0</span></div>
+    </div>
+    <p>Achetez local, simplement !</p>
+  </header>
+
+  <section class="hero">
+    <h2>Bienvenue sur Mali Market</h2>
+    <p>Découvrez des produits et des prix en FCFA.</p>
+    <strong>Le commerce malien à portée de main.</strong>
+  </section>
+
+  <main>
+    <h2>Nos produits</h2>
+
+    <label for="search">Rechercher un produit</label>
+    <input id="search" type="search"
+      placeholder="Ex. chaussures, téléphone..."
+      oninput="showProducts()">
+
+    <label for="category">Catégorie</label>
+    <select id="category" onchange="showProducts()">
+      <option value="Toutes">Toutes les catégories</option>
+      <option value="Mode">Mode</option>
+      <option value="Électronique">Électronique</option>
+      <option value="Accessoires">Accessoires</option>
+      <option value="Maison">Maison</option>
+      <option value="Agriculture">Agriculture</option>
+    </select>
+
+    <div id="products" class="products"></div>
+    <p id="empty" hidden>Aucun produit trouvé.</p>
+
+    <section class="panel">
+      <h2>🛒 Mon panier</h2>
+      <div id="cart"></div>
+      <h3 id="total">Total : 0 FCFA</h3>
+      <button class="full" onclick="checkout()">
+        Préparer ma commande
+      </button>
+      <p id="message" role="status"></p>
+      <p class="note">
+        Prototype de démonstration : aucune commande réelle
+        n'est envoyée pour le moment.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>Vendre sur Mali Market</h2>
+      <p>
+        Nous souhaitons accueillir les vendeurs et commerçants
+        du Mali.
+      </p>
+      <p class="note">
+        La création de comptes vendeurs et la publication
+        réelle de produits seront ajoutées dans une prochaine version.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <strong>Mali Market 🇲🇱</strong>
+    <p>Une idée pour faciliter le commerce au Mali.</p>
+  </footer>
+
+  <script>
+    const products = [
+      {id: 1, name: "Chaussures", price: 12000,
+       category: "Mode", icon: "👟"},
+      {id: 2, name: "Téléphone", price: 45000,
+       category: "Électronique", icon: "📱"},
+      {id: 3, name: "Sac", price: 8000,
+       category: "Accessoires", icon: "🎒"},
+      {id: 4, name: "Écouteurs", price: 5000,
+       category: "Électronique", icon: "🎧"},
+      {id: 5, name: "Montre", price: 10000,
+       category: "Accessoires", icon: "⌚"},
+      {id: 6, name: "Chaise", price: 15000,
+       category: "Maison", icon: "🪑"},
+      {id: 7, name: "Riz", price: 15000,
+       category: "Agriculture", icon: "🌾"},
+      {id: 8, name: "T-shirt", price: 5000,
+       category: "Mode", icon: "👕"}
+    ];
+
+    let cart = [];
+
+    const money = amount =>
+      amount.toLocaleString("fr-FR") + " FCFA";
+
+    function showProducts() {
+      const query = document.getElementById("search")
+        .value.trim().toLowerCase();
+
+      const category = document.getElementById("category").value;
+
+      const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(query) &&
+        (category === "Toutes" || p.category === category)
+      );
+
+      document.getElementById("empty").hidden = filtered.length > 0;
+
+      document.getElementById("products").innerHTML =
+        filtered.map(p => `
+          <article class="product">
+            <div class="picture">${p.icon}</div>
+            <h3>${p.name}</h3>
+            <p>${p.category}</p>
+            <p class="price">${money(p.price)}</p>
+            <button onclick="addToCart(${p.id})">
+              Ajouter au panier
+            </button>
+          </article>
+        `).join("");
+    }
+
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      if (product) cart.push(product);
+      showCart();
+      document.getElementById("message").textContent =
+        "Produit ajouté au panier.";
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      showCart();
+    }
+
+    function showCart() {
+      document.getElementById("count").textContent = cart.length;
+
+      document.getElementById("cart").innerHTML =
+        cart.length ? cart.map((p, i) => `
+          <div class="cart-item">
+            <span>${p.icon} ${p.name}<br>${money(p.price)}</span>
+            <button class="secondary"
+              onclick="removeFromCart(${i})">
+              Retirer
+            </button>
+          </div>
+        `).join("") : "<p>Ton panier est vide.</p>";
+
+      const total = cart.reduce((sum, p) => sum + p.price, 0);
+      document.getElementById("total").textContent =
+        "Total : " + money(total);
+    }
+
+    function checkout() {
+      const message = document.getElementById("message");
+
+      if (cart.length === 0) {
+        message.textContent =
+          "Ajoute d'abord un produit au panier.";
+        return;
+      }
+
+      message.textContent =
+        "Ton panier contient " + cart.length +
+        " article(s), pour un total de " +
+        money(cart.reduce((sum, p) => sum + p.price, 0)) +
+        ". Le formulaire de commande sera ajouté dans la prochaine version.";
+    }
+
+    showProducts();
+    showCart();
+  </script>
+</body>
+</html>
